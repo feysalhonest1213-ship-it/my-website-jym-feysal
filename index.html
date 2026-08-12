@@ -1,113 +1,142 @@
-// ===== Scroll progress bar =====
-const progressBar = document.getElementById('progressBar');
-function updateProgressBar(){
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  progressBar.style.width = pct + '%';
-}
-window.addEventListener('scroll', updateProgressBar);
-updateProgressBar();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerGym | Transform Your Fitness</title>
+    <!-- Linking External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-// ===== Mobile nav toggle =====
-const navToggle = document.getElementById('navToggle');
-const mainNav = document.getElementById('mainNav');
-navToggle.addEventListener('click', () => {
-  mainNav.classList.toggle('open');
-  mainNav.style.display = mainNav.classList.contains('open') ? 'flex' : 'none';
-});
+    <!-- Header / Navigation -->
+    <header>
+        <div class="navbar">
+            <div class="logo">Power<span>Gym</span></div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#plans">Membership</a></li>
+                    <li><a href="#register">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-// close mobile nav after clicking a link
-mainNav.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    mainNav.classList.remove('open');
-    if (window.innerWidth <= 900) mainNav.style.display = 'none';
-  });
-});
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Build Your Ideal Body</h1>
+            <p>State-of-the-art equipment, professional trainers, and personalized training programs.</p>
+            <a href="#register" class="btn">Join Now</a>
+        </div>
+    </section>
 
-// ===== Loading bar animation in hero (signature element) =====
-const loadFill = document.getElementById('loadFill');
-const loadLabel = document.getElementById('loadLabel');
-const TARGET_KG = 140;
+    <!-- About & Facilities Section -->
+    <section id="about" class="about">
+        <h2>Why Choose PowerGym?</h2>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Modern Equipment</h3>
+                <p>Fully equipped with top-tier cardio machines, heavy free weights, and functional strength racks.</p>
+            </div>
+            <div class="card">
+                <h3>Certified Coaches</h3>
+                <p>Get personalized guidance and custom workout routines tailored to your fitness targets.</p>
+            </div>
+            <div class="card">
+                <h3>Flexible Hours</h3>
+                <p>Open 7 days a week with flexible morning, afternoon, and evening training slots.</p>
+            </div>
+        </div>
+    </section>
 
-function animateLoadMeter(){
-  let current = 0;
-  const duration = 1400;
-  const start = performance.now();
+    <!-- Membership Plans -->
+    <section id="plans" class="plans">
+        <h2>Membership Plans</h2>
+        <div class="grid-3">
+            <div class="plan-card">
+                <h3>1 Month Pass</h3>
+                <p class="price">$30 <span>/ month</span></p>
+                <ul>
+                    <li>Full Gym Access</li>
+                    <li>Locker Room & Shower</li>
+                    <li>1 Free Trainer Session</li>
+                </ul>
+            </div>
+            <div class="plan-card featured">
+                <h3>3 Month Pass</h3>
+                <p class="price">$80 <span>/ 3 months</span></p>
+                <ul>
+                    <li>Full Gym Access</li>
+                    <li>Locker Room & Shower</li>
+                    <li>Weekly Progress Tracking</li>
+                </ul>
+            </div>
+            <div class="plan-card">
+                <h3>Annual Pass</h3>
+                <p class="price">$280 <span>/ year</span></p>
+                <ul>
+                    <li>24/7 Priority Access</li>
+                    <li>Free Diet & Workout Plan</li>
+                    <li>Unlimited Group Classes</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-  function tick(now){
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    // ease-out
-    const eased = 1 - Math.pow(1 - progress, 3);
-    current = Math.round(eased * TARGET_KG);
-    loadFill.style.width = (eased * 100) + '%';
-    loadLabel.textContent = `LOADING BAR: ${current} kg`;
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-window.addEventListener('load', animateLoadMeter);
+    <!-- Registration Section -->
+    <section id="register" class="register">
+        <div class="form-container">
+            <h2>Gym Membership Registration</h2>
+            <form id="membershipForm">
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="John Doe" required>
+                </div>
 
-// ===== Animated stat counters (trigger on scroll into view) =====
-const statNums = document.querySelectorAll('.stat-num');
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting){
-      animateCount(entry.target);
-      statObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+252 61xxxxxxx" required>
+                </div>
 
-statNums.forEach(el => statObserver.observe(el));
+                <div class="input-group">
+                    <label for="membershipType">Select Membership</label>
+                    <select id="membershipType" required>
+                        <option value="">-- Choose a Plan --</option>
+                        <option value="1">1 Month Plan ($30)</option>
+                        <option value="3">3 Months Plan ($80)</option>
+                        <option value="12">1 Year Plan ($280)</option>
+                    </select>
+                </div>
 
-function animateCount(el){
-  const target = parseInt(el.dataset.target, 10);
-  const duration = 1200;
-  const start = performance.now();
+                <div class="input-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" required>
+                </div>
 
-  function tick(now){
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(eased * target);
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
+                <button type="submit" class="submit-btn">Register Member</button>
+            </form>
 
-// ===== Smooth-scroll CTA buttons to contact section =====
-const heroCta = document.getElementById('heroCta');
-const joinBtn = document.getElementById('joinBtn');
-function scrollToContact(){
-  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-}
-heroCta.addEventListener('click', scrollToContact);
-joinBtn.addEventListener('click', scrollToContact);
+            <!-- Registration Summary Output -->
+            <div id="outputCard" class="hidden">
+                <h3>Registration Confirmed</h3>
+                <p><strong>Member Name:</strong> <span id="outName"></span></p>
+                <p><strong>Phone:</strong> <span id="outPhone"></span></p>
+                <p><strong>Plan Duration:</strong> <span id="outPlan"></span> Month(s)</p>
+                <p><strong>Start Date:</strong> <span id="outStart"></span></p>
+                <p><strong>Expiration Date:</strong> <span id="outExpire"></span></p>
+            </div>
+        </div>
+    </section>
 
-// ===== Pricing plan buttons pre-fill the contact form =====
-document.querySelectorAll('.plan-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const planName = btn.closest('.price-card').querySelector('h3').textContent;
-    const goalField = document.querySelector('textarea[name="goal"]');
-    goalField.value = `I'm interested in the ${planName} plan.`;
-    scrollToContact();
-    document.querySelector('input[name="name"]').focus();
-  });
-});
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 PowerGym Management System. All Rights Reserved.</p>
+    </footer>
 
-// ===== Contact form submission (front-end only demo) =====
-const contactForm = document.getElementById('contactForm');
-const formStatus = document.getElementById('formStatus');
-
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = contactForm.name.value.trim();
-  if (!name){
-    formStatus.textContent = 'Please add your name so we know who to expect.';
-    return;
-  }
-  formStatus.textContent = `Thanks, ${name.split(' ')[0]} — we'll text you to lock in your free session.`;
-  contactForm.reset();
-});
+    <!-- Linking External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
