@@ -1,113 +1,40 @@
-// ===== Scroll progress bar =====
-const progressBar = document.getElementById('progressBar');
-function updateProgressBar(){
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  progressBar.style.width = pct + '%';
-}
-window.addEventListener('scroll', updateProgressBar);
-updateProgressBar();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('membershipForm');
+    const outputCard = document.getElementById('outputCard');
 
-// ===== Mobile nav toggle =====
-const navToggle = document.getElementById('navToggle');
-const mainNav = document.getElementById('mainNav');
-navToggle.addEventListener('click', () => {
-  mainNav.classList.toggle('open');
-  mainNav.style.display = mainNav.classList.contains('open') ? 'flex' : 'none';
-});
+    // Auto-fill today's date into the Start Date input field
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').value = today;
 
-// close mobile nav after clicking a link
-mainNav.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    mainNav.classList.remove('open');
-    if (window.innerWidth <= 900) mainNav.style.display = 'none';
-  });
-});
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-// ===== Loading bar animation in hero (signature element) =====
-const loadFill = document.getElementById('loadFill');
-const loadLabel = document.getElementById('loadLabel');
-const TARGET_KG = 140;
+        // Extract values from form inputs
+        const name = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const months = parseInt(document.getElementById('membershipType').value);
+        const startDateValue = document.getElementById('startDate').value;
 
-function animateLoadMeter(){
-  let current = 0;
-  const duration = 1400;
-  const start = performance.now();
+        // Calculate Expiration Date
+        const startDate = new Date(startDateValue);
+        const expireDate = new Date(startDate);
+        expireDate.setMonth(expireDate.getMonth() + months);
 
-  function tick(now){
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    // ease-out
-    const eased = 1 - Math.pow(1 - progress, 3);
-    current = Math.round(eased * TARGET_KG);
-    loadFill.style.width = (eased * 100) + '%';
-    loadLabel.textContent = `LOADING BAR: ${current} kg`;
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-window.addEventListener('load', animateLoadMeter);
+        // Format dates for display
+        const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+        const formattedStart = startDate.toLocaleDateString('en-US', dateOptions);
+        const formattedExpire = expireDate.toLocaleDateString('en-US', dateOptions);
 
-// ===== Animated stat counters (trigger on scroll into view) =====
-const statNums = document.querySelectorAll('.stat-num');
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting){
-      animateCount(entry.target);
-      statObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
+        // Inject content into output card
+        document.getElementById('outName').textContent = name;
+        document.getElementById('outPhone').textContent = phone;
+        document.getElementById('outPlan').textContent = months;
+        document.getElementById('outStart').textContent = formattedStart;
+        document.getElementById('outExpire').textContent = formattedExpire;
 
-statNums.forEach(el => statObserver.observe(el));
-
-function animateCount(el){
-  const target = parseInt(el.dataset.target, 10);
-  const duration = 1200;
-  const start = performance.now();
-
-  function tick(now){
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(eased * target);
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-// ===== Smooth-scroll CTA buttons to contact section =====
-const heroCta = document.getElementById('heroCta');
-const joinBtn = document.getElementById('joinBtn');
-function scrollToContact(){
-  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-}
-heroCta.addEventListener('click', scrollToContact);
-joinBtn.addEventListener('click', scrollToContact);
-
-// ===== Pricing plan buttons pre-fill the contact form =====
-document.querySelectorAll('.plan-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const planName = btn.closest('.price-card').querySelector('h3').textContent;
-    const goalField = document.querySelector('textarea[name="goal"]');
-    goalField.value = `I'm interested in the ${planName} plan.`;
-    scrollToContact();
-    document.querySelector('input[name="name"]').focus();
-  });
-});
-
-// ===== Contact form submission (front-end only demo) =====
-const contactForm = document.getElementById('contactForm');
-const formStatus = document.getElementById('formStatus');
-
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = contactForm.name.value.trim();
-  if (!name){
-    formStatus.textContent = 'Please add your name so we know who to expect.';
-    return;
-  }
-  formStatus.textContent = `Thanks, ${name.split(' ')[0]} — we'll text you to lock in your free session.`;
-  contactForm.reset();
+        // Display output container and reset form fields
+        outputCard.classList.remove('hidden');
+        form.reset();
+        document.getElementById('startDate').value = today;
+    });
 });
